@@ -1,0 +1,200 @@
+         ___       __  _ ____     _      __
+        / _ | ____/ /_(_) _(_)___(_)__ _/ /
+       / __ |/ __/ __/ / _/ / __/ / _ `/ / 
+      /_/ |_/_/  \__/_/_//_/\__/_/\_,_/_/  
+      _  __                  __
+     / |/ /__ __ _________ _/ /
+    /    / -_) // / __/ _ `/ / 
+   /_/|_/\__/\_,_/_/  \_,_/_/  
+   _  __    __                  __  
+  / |/ /__ / /__    _____  ____/ /__
+ /    / -_) __/ |/|/ / _ \/ __/  '_/
+/_/|_/\__/\__/|__,__/\___/_/ /_/\_\ 
+                    By Svetniak.
+
+
+Las ANN, tambien conocidas como SNN (simulated neural netwoks) son un subconjunto de 'Machine learning' y el corazon de los algoritmos de este. Su nombre y estructura esta inspirado en el cerebro humano, ya que estas imitan la manera en que las neuronas biologicas se comunican.
+Las ANN estan compuestas por capas de nodos conectados entre si, ordenadas en capas de entrada, capas ocultas y una de salida. Cada nodo, o neurona esta conectada con otra y tiene un peso y valor de umbral asociado.
+Estas neuronas se activan una vez que el unbral es rebasado y se manda informacion a la siguiente capa, Este umbral de activacion esta dado por una funcion de activacion, dada a cada capa.
+ANN confian en el entrenamiento para aprender y mejorar con el tiempo. Una vez que estos algoritmos se encuentran bien afinados para conseguir presicion, se convierten en poderosas herramientas para las iteligencias artificiales
+
+##IMPORTACION DE DATOS
+
+Para analizar datos atravez de 'Deep learning' necesitamos ... Datos.
+por este motivo lo primero que debo hacer es: importar los datos que voy a analizar:
+
+
+Lo primero que debo hacer, es importar las librerias necesarias que voy a utilizar:
+  -File browser
+  -Upload File
+  -*Selecciona el archivo con la data (usualmente un excel)
+
+Ahora, el siguiente paso es importar las librerias que utilizare:
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+
+para programar voy a utilizar las plataformas:
+  Jupyter
+  Google colab
+
+En estas ya estan instaladas muchas de las extenciones que voy a utilizar como Pandas o tensorflow
+
+#creo una variable de nombre 'dataset' ya que ese es su proposito.
+#la variable dara los datos a una funcion de pandas llamada 'read_excel'.
+#a la funsion se le da como parametro, el archivo excel que contiene los datos.
+
+dataset = ps.read_excel('Folds5x2_pp.xlsx')
+
+Ahora debo crear otras dos variables para colocar los datos:
+X.  una 'X' (Mayuscul) para las funsiones de salida, en este caso: Corriente, presion, voltage, temperatura, etc. a esta se le llama MATRIZ DE FUNCIONES
+y. una 'y' (minuscula) para el vector de variables dependientes: Estos son los datos que queremos analizar
+
+De esta manera:
+
+X = dataset.iloc[:, :-1].values
+#La funcion 'iloc' es una funcion de Pandas, que se encarga de seleccionar las lineas y columnas del archivo excel: lineas primero, columnas despues.
+
+para seleccionar los datos del archivo se utiliza la notacion de brackets de python: [:, :-1]
+#De aqui, el primerl punto y coma es para seleccionar las lineas, al no colocar nada antes o despues del simbolo el programa asume que queremos la data desde la primera hasta la ultima linea.
+#separado por una coma se encuentran los datos de las columnas. En este no se coloco nada antes del punto y coma, entonses, al igual que antes, por defecto seleccionara desde la primer columna, y el '-1' despues del signo, significa que seleccionara todos lo lugares hasta uno antes del ultimo.
+  resumiendo: estamos seleccionando todas las lineas, y todas las columnas a excepcion de la ultima (ya que esta sera utilizada para la 'y').
+Por ultimo, le indicamos al programa que esta variable es para los valores, con la funcion '.values'
+
+Por otro lado para seleccionar las variables dependientes, usaremos la ultima columna, por lo cual, la funcion se vera asi:
+y = dataset.iloc[;,-1].values ##Donde el menos uno, significa que estamos seleccionando solo la ultima columna( ya que esta es la que tiene el indice '-1').
+
+En otras palabras: estamos seleccionando las entradas en las 'X' y las salidas en las 'y'.
+
+Podemos revisar los datos, imprimiendo en pantalla los vectores, asi:
+
+print [X]
+print [y]
+
+## SEPARACION DE DATOS EN SETS DE ENTRENAMIENTO Y PRUEBA.
+Para esta parte, voy a utilizar la funcion del modulo 'model selection' cuya funsion es la comparacion y preprocesamiento de datos.
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y,test_size = 0.2, ransom_state = 0)
+
+
+Hasta este punto de la programacion, tenemos la primera capa de nuestra red neuronal, compuesta por los datos de entrada '[X]'
+
+##CONSTRUYENDO LA RED NEURONAL ARTIFICIAL
+
+En esta seccion voy a inicializar la ANN como una secuencia de capas.
+Las ANN tienen dos tipos:
+  - Secuencia de capas
+  - Grafica Computacional
+
+en la celda de codigo introduzco:
+
+ann = tf.keras.models.Sequencial()
+
+
+#Esta es una funcion dentro del modulo Keras, que a su vez pertenece a Tensorflow.
+Esta fucion nos permitira realizar la inicializacion.
+
+
+##ADDING LAYERS
+
+ann.add(tf.keras.layers.Dense(units=6, activation='relu'))
+ann.add(tf.ketas.layers.Dense(units=6, activation='relu'))
+
+##ADDING FINAL LAYERS
+ann.add(tf.ketas.layers.Dense(units=1))
+
+##notas##
+Si estas haciendo clasificaciones con dos categorias a predecir al final, como lo son si o no, o, 0 y 1. Debes seleccionarla funcion de activacion sigmoid
+
+Si estas haciendo clasificacion con mas de 2 categorias a predecir al final, debes seleccionar la funcion de activacion 'Softmax'
+
+Si estas haciendo regrecion, o sea, si debes obtener un numero real continuo como resultado final, no debes seleccionar funcion de activacion.
+
+##ENTRENANDO LA ANN
+
+
+--->COMPILANDO LA ANN
+  conectando con la ann un optimizador de perdida
+
+  ann.compile(optimizer = 'adam', loss = 'mean_squared_error')
+
+--->TRAINING ANN
+  ann.fit(x_train, y_train, batch_size = 32, epochs = 100)
+
+  para el entrenamiento de la ANN utilizare el metodo 'fit'
+  como parametros le agregaremos los sets que definimos antes: x_train y y_train.
+
+##CORRER EL ENTRENAMIENTO.
+
+correr las celdas de codigo una por una.
+
+##PREDICIENDO LOS RESULTADOS DEL SET DE PRUEBA
+
+y_pred = ann.predict(x_test)
+np.set_printoptions(precition=2)
+print(np.concatenate(y_pred.reshape(len(y_pred),1), y_test.reshape(len(y_test),1),1)).
+
+
+---------------------------
+|    ACTIVATION FUNCTION   |
+---------------------------
+
+En una red neuronal artificial, la funcion de activacion es una funcion matematica que determina la salida de una neurona o nodo basado en su entrada. Esta agrega no linearidad a la red, permitiendo el modelado de relaciones complejas entre las entradas y salidas.
+La funcion de activacion toma la suma de peso de la entrada de las neuronas, conocido como activacion y le aplica una transformacion, Estos valores transformados son usados como las salidas de las neuronas y pasados a la diguiente capa de la NN o usada para hacer predicciones.
+El proposito prinsipal de la funcion de activacion es agregar no linialidad a la ANN, sin 'No linialidad' una ANN quedaria reducida a ua funcion lineal sin importa la cantidad de capas que esta tenga. 'No linealidad' le da a la ANN la capacidad de aprender y la posibilidad de representar relaciones complejas no lineales en los datos, haciendo las ANN capaces de resolver una amplia variedad de problemas.
+
+Existen diferentes tipos de fuciones de activacion. Cada una con sus caracteristicas propias y conveniente para diferentes tareas.
+
+Algunas funciones de activacion son las siguientes:
+
+-->Umbral
+Esta es las mas simple de las funciones en donde los resultados son:
+  1 si x >= 0
+  0 si x <  0
+
+-->Sigmoid (en forma de 'S')
+Esta es una formula muy interesante
+donde: x = 1 / 1 + e^-x
+Los valores de salida son contenidos entre 0 y 1, las cuales pueden ser interpretadas como probabilidad.
+utilizada para la capa de salida. Especialmente para realizar prediccion de probabilidades. No es utilizada en 'Deep learning'
+
+-->Unidad Lineal Rectificada (ReLU):
+Esta retorna el valor de entrada si es positiva, de lo contrario retorna 0. ReLU es popular por su simplicidad y avilidad de mitigar 'Vanishing Gradients'. Por otro lado esta puede sufrir de 'dying ReLU' donde las neuronas se vuelven inactivas permanentemente.
+su formula es x = max(x,0)
+
+-->Leaky ReLU
+Similar al ReLU pero permite pequenos valores positivos para mitigar el problema de 'Dying ReLU'
+Su formula es: f(x) = max(ax, x)
+
+-->Tangente Hyperbolica (tanh)
+Similar a la funcion Sigmoid, con la diferencia de que esta funcion puede variar de -1 a 1.
+su formula es:
+x = 1-e^12x / 1+e^-2x
+
+-->Softmax
+Usada tipicamente en la capa de salida para problemas de clasificacion multi-clase. 
+
+Para indagar mas al respecto de estas funciones:
+  Paper:
+  Deep sparse rectifier neural networks
+  Xavier Glorot et al (2011)
+
+  http://mjlr.org/proceedings/papers/v15/glorot11a/glorot11a.pdf
+
+------------------------
+|    HOW DO ANN WORK    |
+------------------------
+
+Las redes neuronales artificiales son un modelo de 'machine learning', inspiradas en la estructura y funcionamiento de las neuronas biologicas en el cerebro. Estan compuestas por nodos o neuronas interconectadas organizadas en capas, Cada neurona tiene entradas, a las cuales se le aplica un 'peso' y se les realizan computos para producir salidas.
+-->Capa de entrada:
+La red neuronal comienza con una capa de entrada, la cualrecive los datos iniciales o caracteristicas. Cada entrada es representada por la entrada correspondiente en la capa de entrada.
+-->Capas ocultas:
+La capa de entrada esta seguida de una o mas capas ocultas, estas capas estan compuestas por neuronas, que procesan las entradas y les aplican 'peso', realizan un suma de pesos y aplican funciones de activacion, la funcion de activacion agrega 'no-linearidad' a la ANN, permitiendo al modelo realizar relaciones complejas.
+-->Capas de salida:
+La ultima capa oculta es seguida de una capa de salida, el numero de neuronas en la capa de salida depende del tipo de problema que esta resuelve. Por ejemplo, en un problema de 
+-----------------------------
+|    COMO APRENDEN LAS NN    |
+-----------------------------
+
+
